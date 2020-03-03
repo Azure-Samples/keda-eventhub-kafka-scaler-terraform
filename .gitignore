@@ -40,3 +40,8 @@ release.properties
 .project
 .settings/
 .factorypath
+
+# Terraform
+.terraform/
+terraform.*
+out.plan

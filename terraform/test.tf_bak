@@ -1,0 +1,10 @@
+provider "azurerm" {
+    version         = ">= 2.0"
+    features {}
+}
+resource "azurerm_role_assignment" "acrpull_role_aks_app" {
+    scope                            = var.resource_group_name
+    role_definition_name             = "AcrPull"
+    principal_id                     = var.service_principal_client_id
+    skip_service_principal_aad_check = true
+}
