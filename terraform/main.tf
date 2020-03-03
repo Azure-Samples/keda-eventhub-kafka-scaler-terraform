@@ -3,10 +3,14 @@ provider "azurerm" {
     features {}
 }
 
+# Azure resource group
+
 resource "azurerm_resource_group" "rg_keda_eventhub" {
     name     = var.resource_group_name
     location = var.location
 }
+
+# Azure container registry
 
 resource "azurerm_container_registry" "acr" {
     name                = "${var.resource_name_prefix}acr"
@@ -19,6 +23,8 @@ resource "azurerm_container_registry" "acr" {
 resource "random_id" "log_analytics_workspace_name_suffix" {
     byte_length = 8
 }
+
+# Log analytics workspace and solution
 
 resource "azurerm_log_analytics_workspace" "aks_app_log_workspace" {
     # The WorkSpace name has to be unique across the whole of azure, not just the current subscription/tenant.
@@ -40,6 +46,8 @@ resource "azurerm_log_analytics_solution" "aks_app_log_solution" {
         product   = "OMSGallery/ContainerInsights"
     }
 }
+
+# AKS cluster
 
 resource "azurerm_kubernetes_cluster" "aks_app" {
     name                = var.cluster_name
@@ -89,6 +97,8 @@ resource "azurerm_role_assignment" "acrpull_role_aks_app" {
     skip_service_principal_aad_check = true
 }
 
+# Helm and KEDA installation
+
 provider "helm" {
     version = ">= 0.7"
 
@@ -112,4 +122,36 @@ resource "helm_release" "keda" {
         name  = "logLevel"
         value = "debug"
     }
+}
+
+# Event Hubs
+
+resource "azurerm_eventhub_namespace" "hubns" {
+    name                     = "${var.resource_name_prefix}-hubns-${var.tag_env}"
+    resource_group_name      = var.resource_group_name
+    location                 = var.location
+    sku                      = "Standard"
+    capacity                 = 2
+    auto_inflate_enabled     = true
+    maximum_throughput_units = 20
+
+    tags = {
+        environment = var.tag_env
+    }
+}
+
+# Consumer topic
+
+resource "azurerm_eventhub" "rcvr_topic" {
+    name                = var.rcvr_topic
+    namespace_name      = azurerm_eventhub_namespace.hubns.name
+    resource_group_name = azurerm_eventhub_namespace.hubns.resource_group_name
+    partition_count     = var.rcvr_topic_partition_count
+    message_retention   = var.rcvr_topic_message_retention
+}
+resource "azurerm_eventhub_consumer_group" "group_rcvr_topic" {
+    name                = var.rcvr_topic_consumer_group_name
+    namespace_name      = azurerm_eventhub_namespace.hubns.name
+    eventhub_name       = azurerm_eventhub.rcvr_topic.name
+    resource_group_name = azurerm_eventhub_namespace.hubns.resource_group_name
 }
