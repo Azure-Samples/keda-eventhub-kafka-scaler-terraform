@@ -25,6 +25,10 @@ variable "node_count" {
   default = 3
 }
 
+variable "vm_size" {
+  default = "Standard_F4s_v2"
+}
+
 variable "dns_prefix" {
   default = "keda-cluster"
 }
@@ -36,7 +40,7 @@ variable cluster_name {
 variable resource_group_name {
   type        = string
   description = "Resource group name"
-  default     = "keda-eventhub"
+  default     = "keda-rg"
 }
 
 variable location {
@@ -45,26 +49,19 @@ variable location {
   default     = "eastus"
 }
 
-variable log_analytics_workspace_name {
-  default = "LogAnalyticsWorkspaceKeda"
-}
-
-# refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions
-variable log_analytics_workspace_location {
-  default = "eastus"
-}
-
-# refer https://azure.microsoft.com/pricing/details/monitor/ for log analytics pricing 
-variable log_analytics_workspace_sku {
-  default = "PerGB2018"
-}
-
 # Event Hubs (topics)
 variable "rcvr_topic" {
   type        = string
   description = "Receiver topic name"
   default     = "receiver_topic"
 }
+
+# Event Hubs (capacity)
+variable "eventhub_capacity" {
+  description = "Event Hub namespace throughput capacity"
+  default     = 2
+}
+
 
 # Event Hubs (consumer groups)
 variable "rcvr_topic_consumer_group_name" {
