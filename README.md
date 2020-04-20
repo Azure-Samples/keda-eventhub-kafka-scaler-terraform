@@ -6,9 +6,15 @@ This is a quickstart for **Kafka trigger scaler** using **Azure Event Hubs with 
 
 [KEDA](https://keda.sh) is a Kubernetes-based Event Driven Autoscaler. KEDA determines how any container within Kubernetes should be scaled based on the number of events that need to be processed. KEDA, which has a variety of out-of-the-box scalers, supports multiple types of workloads, supports Azure Functions, and is vendor-agnostic.
 
-This sample uses terraform to deploy the required resources.
-
 ![Architecture image](./docs/architecture-image.png)
+
+The application that needs to be scaled out automatically based on incoming message count is deployed on the AKS cluster. A Kafka scaler is used in this sample to detect if deployment should be activated or deactivated and to feed custom metrics for a specific event source. The event source in this example is an Azure Event Hub.
+
+When the number of messages in the Azure Event Hub exceed a threshold (set to 50 in the sample by default), KEDA triggers the pods to scale out thus increasing the number of messages processed by the application. Automatic scale down of the pods occurs when the number of messages in the event source falls below the threshold value.
+
+This pattern can be successfully implemented in Microservices architectures which are event driven.
+
+This sample uses terraform to deploy the required resources.
 
 ## Repository structure
 
