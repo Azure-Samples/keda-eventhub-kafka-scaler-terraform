@@ -98,7 +98,7 @@ resource "helm_release" "keda" {
 
 resource "azurerm_eventhub_namespace" "hubns" {
   name                     = "${var.resource_name_prefix}-hubns-${var.tag_env}"
-  resource_group_name      = var.resource_group_name
+  resource_group_name      = azurerm_resource_group.rg_keda.name
   location                 = var.location
   sku                      = "Standard"
   capacity                 = var.eventhub_capacity
@@ -119,6 +119,7 @@ resource "azurerm_eventhub" "rcvr_topic" {
   partition_count     = var.rcvr_topic_partition_count
   message_retention   = var.rcvr_topic_message_retention
 }
+
 resource "azurerm_eventhub_consumer_group" "group_rcvr_topic" {
   name                = var.rcvr_topic_consumer_group_name
   namespace_name      = azurerm_eventhub_namespace.hubns.name
