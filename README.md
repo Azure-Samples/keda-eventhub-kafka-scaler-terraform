@@ -8,7 +8,7 @@ This is a quickstart for **Kafka trigger scaler** using **Azure Event Hubs with 
 
 This sample uses terraform to deploy the required resources.
 
-![Architecture image](docs\architecture-image.png)
+![Architecture image](./docs/architecture-image.png)
 
 ## Repository structure
 
