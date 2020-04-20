@@ -1,19 +1,14 @@
-# Microservices with KEDA
+# Autoscaling Java applications with KEDA using Azure Event Hubs
 
-Quickstart for Kafka trigger scaler using Azure Event Hubs Kafka head to scale Java applications deployed on AKS which consumes the event hub messages.
+This is a quickstart for **Kafka trigger scaler** using **Azure Event Hubs with Kafka head** to scale **Java applications** deployed on **AKS** which consume messages from Azure Event Hub.
+
+## Key Concepts
+
+[KEDA](https://keda.sh) is a Kubernetes-based Event Driven Autoscaler. KEDA determines how any container within Kubernetes should be scaled based on the number of events that need to be processed. KEDA, which has a variety of out-of-the-box scalers, supports multiple types of workloads, supports Azure Functions, and is vendor-agnostic.
+
+This sample uses terraform to deploy the required resources.
 
 ![Architecture image](docs\architecture-image.png)
-
-
-## Resources created
-
-The infrastructure provisioned by Terraform includes:
-
-* Resource Group
-* Azure Container Registry
-* 3 node Azure Kubernetes Cluster with KEDA
-* 1 Azure Event Hub Namespace with autosclae throughput
-* 1 Azure Event Hub with a Consumer Group
 
 ## Repository structure
 
@@ -24,6 +19,15 @@ The infrastructure provisioned by Terraform includes:
 | microservices | Application code and Docker images             |
 | terraform     | Terraform template for infrastructure creation |
 
+## Resources created
+
+The infrastructure provisioned by Terraform by default includes:
+
+* 1 Resource Group
+* 1 Azure Container Registry
+* 3 node Azure Kubernetes Cluster with KEDA
+* 1 Azure Event Hub Namespace with autoscale enabled throughput
+* 1 Azure Event Hub with a Consumer Group
 
 ## Prerequisites
 
@@ -133,7 +137,6 @@ eventhub_name_base64encoded = cmVjZWl2ZXJfdG9waWM=
 eventhub_namespace_conn_string = kjnfaslnfow89ykjnf
 eventhub_namespace_name = kedaeh-hubns-dev
 eventhub_namespace_name_base64encoded = a2VkYWVoLWh1Ym5zLWRldg==
-acr_name = kedaehacr
 resource_group_name = keda-rg
 aks_cluster_name = keda-cluster
 host = <redacted>
@@ -142,6 +145,7 @@ kube_config = <sensitive>
 
 Make note of the following values:
 ```
+acr_name
 eventhub_consumergroup_name
 eventhub_consumergroup_name_base64encoded
 eventhub_name
@@ -149,7 +153,6 @@ eventhub_name_base64encoded
 eventhub_namespace_conn_string_base64encoded
 eventhub_namespace_name
 eventhub_namespace_name_base64encoded
-acr_name
 resource_group_name
 aks_cluster_name
 ```
@@ -214,11 +217,11 @@ docker tag <image_tag> <acr_name>.azurecr.io/<image_tag>
 docker push <acr_name>.azurecr.io/<image_tag>
 ```
 
-## 7. Update `deploy-kafka-scalar.yaml`
+## 7. Update `deploy-kafka-scaler.yaml`
 
 ### Update deployment image details
 
-Update the Deployment container spec with the image name obtained from previous step in the `keda-java-sample\deploy\deploy-kafka-scalar.yaml` file.
+Update the Deployment container spec with the image name obtained from previous step in the `keda-java-sample\deploy\deploy-kafka-scaler.yaml` file.
 
 ```yaml
     spec:
@@ -232,7 +235,7 @@ Update the Deployment container spec with the image name obtained from previous 
 
 The Kafka trigger needs some metadata to make sure it is scaling the pods based on the right details. These details are provided as a part of metadata in the `ScaledObject` deployment yaml.
 
-Open the `deploy-kafka-scalar.yaml` file and replace the `<eventhub_namespace_name>`, `<eventhub_consumergroup_name>` and `<eventhub_name>` with the actual values obtained from terraform output in plain text:
+Open the `deploy-kafka-scaler.yaml` file and replace the `<eventhub_namespace_name>`, `<eventhub_consumergroup_name>` and `<eventhub_name>` with the actual values obtained from terraform output in plain text:
 
 ```yaml
     metadata:
@@ -251,11 +254,11 @@ kubectl apply -f deploy-secret.yaml
 > secret/keda-kafka-secrets created
 ```
 
-Make sure that the image name and tag in the `deploy-kafka-scalar.yaml` file matches the docker image pushed to ACR in the previous section
+Make sure that the image name and tag in the `deploy-kafka-scaler.yaml` file matches the docker image pushed to ACR in the previous section
 
 ```bash
 # Deploy Java application as Deployment and ScaledObject details
-kubectl apply -f deploy-kafka-scalar.yaml
+kubectl apply -f deploy-kafka-scaler.yaml
 > deployment.apps/kedaconsumer created
 > triggerauthentication.keda.k8s.io/keda-trigger-auth-kafka-credential created
 > scaledobject.keda.k8s.io/kafka-scaledobject created
@@ -289,7 +292,7 @@ keda-hpa-kedaconsumer   Deployment/kedaconsumer   <unknown>/50 (avg)   1        
 
 ## 9. Sending messages to Event Hub to test pod autoscaling
 
-For this, you can execute your own producer sending messages so that they exceed the lag threshold that was set in the `deply-kafka-scalar.yaml` file in order to see the pods scale up.
+For this, you can execute your own producer sending messages so that they exceed the lag threshold that was set in the `deply-kafka-scaler.yaml` file in order to see the pods scale up.
 
 The producer sample given in the `microservices\producer-kafka` folder can also be used to send messages.
 
@@ -357,10 +360,22 @@ kedaconsumer-57f88dc9c8-vtr5m    1/1     Running   0          7s
 kedaconsumer-57f88dc9c8-hdw78    1/1     Running   0          7s
 ```
 
+## Destroy Resources
+
+The resources can be destroyed by running the following commands:
+
+```bash
+# Preview the terraform destroy output
+terraform plan -destroy
+
+# Destroy all the resources deployed for this sample. This will ask for confirmation before destroying, unless -auto-approve is set.
+terraform destroy
+```
+
 ## References
 
 * [KEDA Concepts](https://keda.sh/docs/concepts/)
-* [KEDA Apache Kafka Topic Scalar](https://keda.sh/docs/scalers/apache-kafka-topic/)
+* [KEDA Apache Kafka Topic Scaler](https://keda.sh/docs/scalers/apache-kafka-topic/)
 
 ## Contributing
 
