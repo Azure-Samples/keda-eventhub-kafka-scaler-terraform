@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kedaconsumer
+  labels:
+    app: kedaconsumer
+spec:
+  selector:
+    matchLabels:
+      app: kedaconsumer
+  template:
+    metadata:
+      labels:
+        app: kedaconsumer
+    spec:
+      containers:
+      - name: kedaconsumer
+        image: myacr.azurecr.io/<image_tag>
+        env:
+          - name: EVENTHUB_NAMESPACE
+            valueFrom:
+              secretKeyRef:
+                name: keda-kafka-secrets
+                key: eventhub_namespace
+          - name: EVENTHUB_CONNECTIONSTRING
+            valueFrom:
+              secretKeyRef:
+                name: keda-kafka-secrets
+                key: password
+          - name: CONSUMER_GROUP
+            valueFrom:
+              secretKeyRef:
+                name: keda-kafka-secrets
+                key: consumer_group
+          - name: EVENTHUB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: keda-kafka-secrets
+                key: eventhub_name
+---
+apiVersion: keda.k8s.io/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-trigger-auth-kafka-credential
+  namespace: default
+spec:
+  secretTargetRef:
+  - parameter: authMode
+    name: keda-kafka-secrets
+    key: authMode
+  - parameter: username
+    name: keda-kafka-secrets
+    key: username
+  - parameter: password
+    name: keda-kafka-secrets
+    key: password
+---
+apiVersion: keda.k8s.io/v1alpha1
+kind: ScaledObject
+metadata:
+  name: kafka-scaledobject
+  namespace: default
+  labels:
+    app: kedaconsumer
+    deploymentName: kedaconsumer
+spec:
+  scaleTargetRef:
+    deploymentName: kedaconsumer
+  pollingInterval: 30
+  triggers:
+  - type: kafka
+    metadata:
+      # Required
+      bootstrapServers: <eventhub_namespace_name>.servicebus.windows.net:9093
+      consumerGroup: <eventhub_consumergroup_name>
+      topic: <eventhub_name>
+      lagThreshold: "50"
+    authenticationRef:
+      name: keda-trigger-auth-kafka-credential
