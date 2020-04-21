@@ -9,7 +9,7 @@ import com.microsoft.azure.eventhubs.samples.testconsumereph.Factories.EventProc
 import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessorHostConfiguration;
 import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessorResult;
 
-public class TestConsumerEPH {
+public class Main {
     public static void main(String args[]) throws InterruptedException, ExecutionException {
         EventProcessorHostConfiguration config = CreateEventProcessorHostConfiguration();
         EventProcessorHostFactory ephFactory = new EventProcessorHostFactory(config);

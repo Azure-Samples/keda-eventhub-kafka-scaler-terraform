@@ -36,7 +36,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.microsoft.azure.eventhubs.samples.testconsumereph.TestConsumerEPH</mainClass>
+                            <mainClass>com.microsoft.azure.eventhubs.samples.testconsumereph.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
