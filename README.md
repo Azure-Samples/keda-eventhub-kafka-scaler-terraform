@@ -52,9 +52,9 @@ We will be deploying to Azure, so you will need an Azure account. If you don't h
 Either fork or clone this repo into your local machine
 
 ```bash
-git clone https://github.com/Azure-Samples/keda-java-sample.git
+git clone https://github.com/Azure-Samples/keda-eventhub-kafka-scaler-terraform.git
 
-cd keda-java-sample
+cd keda-eventhub-kafka-scaler-terraform
 ```
 ## 2. Making sure you have the right Azure subscription selected
 
@@ -106,7 +106,7 @@ The current defaults will also work.
 Go to the terraform directory of the repo
 
 ```bash
-cd keda-java-sample\terraform
+cd keda-eventhub-kafka-scaler-terraform\terraform
 
 # Initialize terraform
 terraform init
@@ -165,9 +165,9 @@ aks_cluster_name
 
 ## 5. Store secrets in `deploy-kafka-secret.yaml`
 
-Enter the base64 encoded Event Hub Connection String secret obtained from above value `eventhub_namespace_conn_string_base64encoded` in the `keda-java-sample\deploy\deploy-secret.yaml` file against the `password` field.
+Enter the base64 encoded Event Hub Connection String secret obtained from above value `eventhub_namespace_conn_string_base64encoded` in the `keda-eventhub-kafka-scaler-terraform\deploy\deploy-secret.yaml` file against the `password` field.
 
-Enter the other base64 encoded values against the corresponding fields in the `keda-java-sample\deploy\deply-secret.yaml` file.
+Enter the other base64 encoded values against the corresponding fields in the `keda-eventhub-kafka-scaler-terraform\deploy\deply-secret.yaml` file.
 
 ```yaml
 password: "<eventhub_namespace_conn_string_base64encoded>"
@@ -189,7 +189,7 @@ The Java application can be built independently with running below command from 
 
 ```bash
 # Enter consumer-kafka directory
-cd keda-java-sample\microservices\consumer-kafka
+cd keda-eventhub-kafka-scaler-terraform\microservices\consumer-kafka
 
 # Run mvn clean package
 mvn clean package
@@ -227,7 +227,7 @@ docker push <acr_name>.azurecr.io/<image_tag>
 
 ### Update deployment image details
 
-Update the Deployment container spec with the image name obtained from previous step in the `keda-java-sample\deploy\deploy-kafka-scaler.yaml` file.
+Update the Deployment container spec with the image name obtained from previous step in the `keda-eventhub-kafka-scaler-terraform\deploy\deploy-kafka-scaler.yaml` file.
 
 ```yaml
     spec:
