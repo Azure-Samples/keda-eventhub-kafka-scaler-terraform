@@ -4,25 +4,18 @@
  */
 package com.microsoft.azure.eventhubs.samples.testconsumereph;
 
-import com.microsoft.azure.eventhubs.samples.EventProcessorHostFactory;
 import java.util.concurrent.ExecutionException;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Factories.EventProcessorHostFactory;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessorHostConfiguration;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessorResult;
 
-public class TestConsumerEPH
-{
-    // private static final String consumerGroupName = System.getenv("CONSUMER_GROUP");
-    // private static final String eventHubName = System.getenv("EVENTHUB_NAME");
-    // private static final String storageConnectionString = System.getenv("STORAGE_CONNECTIONSTRING");
-    // private static final String storageContainerName = System.getenv("BLOB_CONTAINER");
-    // private static final String hostNamePrefix = "eph";
-    // private static final String eventHubConnectionString = System.getenv("EVENTHUB_CONNECTIONSTRING");
-    public static void main(String args[]) throws InterruptedException, ExecutionException
-    {
+public class TestConsumerEPH {
+    public static void main(String args[]) throws InterruptedException, ExecutionException {
         EventProcessorHostConfiguration config = CreateEventProcessorHostConfiguration();
-		EventProcessorHostFactory ephFactory = new EventProcessorHostFactory(config);
+        EventProcessorHostFactory ephFactory = new EventProcessorHostFactory(config);
         EventProcessorResult result = ephFactory.ProcessEvents();
-        
-        if (!result.isValid())
-        {
+
+        if (!result.isValid()) {
             String message = String.format("%s: %s", result.getErrorMessage(), result.getExceptionMessage());
             System.out.println(message);
             return;
@@ -44,4 +37,3 @@ public class TestConsumerEPH
         return config;
     }
 }
-

@@ -3,14 +3,15 @@
  * Licensed under the MIT license. See LICENSE file in the project root for full license information.
  */
 
-package com.microsoft.azure.eventhubs.samples;
+package com.microsoft.azure.eventhubs.samples.testconsumereph.Factories;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import com.microsoft.azure.eventhubs.samples.testconsumereph.ErrorNotificationHandler;
-import com.microsoft.azure.eventhubs.samples.testconsumereph.EventProcessor;
-import com.microsoft.azure.eventhubs.samples.testconsumereph.EventProcessorHostConfiguration;
-import com.microsoft.azure.eventhubs.samples.testconsumereph.EventProcessorResult;
+
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Handlers.ErrorNotificationHandler;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessor;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessorHostConfiguration;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.Models.EventProcessorResult;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 
