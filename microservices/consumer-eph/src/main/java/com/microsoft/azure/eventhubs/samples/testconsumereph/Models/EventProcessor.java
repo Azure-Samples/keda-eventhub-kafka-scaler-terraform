@@ -54,14 +54,20 @@ public class EventProcessor implements IEventProcessor {
     public void onEvents(PartitionContext context, Iterable<EventData> events) throws Exception {
         System.out.println("SAMPLE: Partition " + context.getPartitionId() + " got event batch");
         int eventCount = 0;
+
         for (EventData data : events) {
             // It is important to have a try-catch around the processing of each event.
             // Throwing out of onEvents deprives
             // you of the chance to process any remaining events in the batch.
             try {
-                System.out.println("SAMPLE (" + context.getPartitionId() + "," + data.getSystemProperties().getOffset()
-                        + "," + data.getSystemProperties().getSequenceNumber() + "): "
-                        + new String(data.getBytes(), "UTF8"));
+                String message = String.format("SAMPLE (%s,%s,%s): %s", 
+                    context.getPartitionId(), 
+                    data.getSystemProperties().getOffset(),
+                    data.getSystemProperties().getSequenceNumber(),
+                    new String(data.getBytes(), "UTF8"));
+
+                System.out.println(message);
+
                 eventCount++;
 
                 // Checkpointing persists the current position in the event stream for this
@@ -77,10 +83,15 @@ public class EventProcessor implements IEventProcessor {
                 // performance). Checkpointing every five events is an arbitrary choice for this
                 // sample.
                 this.checkpointBatchingCount++;
+
                 if ((checkpointBatchingCount % 5) == 0) {
-                    System.out.println("SAMPLE: Partition " + context.getPartitionId() + " checkpointing at "
-                            + data.getSystemProperties().getOffset() + ","
-                            + data.getSystemProperties().getSequenceNumber());
+                    String partitionMessage = String.format("SAMPLE: Partition %s checkpointing at %s,%s", 
+                        context.getPartitionId(),
+                        data.getSystemProperties().getOffset(),
+                        data.getSystemProperties().getSequenceNumber());
+
+                    System.out.println(partitionMessage);
+
                     // Checkpoints are created asynchronously. It is important to wait for the
                     // result of checkpointing
                     // before exiting onEvents or before creating the next checkpoint, to detect
@@ -91,7 +102,12 @@ public class EventProcessor implements IEventProcessor {
                 System.out.println("Processing failed for an event: " + e.toString());
             }
         }
-        System.out.println("SAMPLE: Partition " + context.getPartitionId() + " batch size was " + eventCount
-                + " for host " + context.getOwner());
+
+        String message = String.format("SAMPLE: Partition %s batch size was %d for host %s", 
+            context.getPartitionId(),
+            eventCount,
+            context.getOwner());
+
+        System.out.println(message);
     }
 }
