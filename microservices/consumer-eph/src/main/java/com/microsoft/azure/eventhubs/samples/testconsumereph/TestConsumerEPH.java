@@ -9,10 +9,17 @@ import java.util.concurrent.ExecutionException;
 
 public class TestConsumerEPH
 {
+    // private static final String consumerGroupName = System.getenv("CONSUMER_GROUP");
+    // private static final String eventHubName = System.getenv("EVENTHUB_NAME");
+    // private static final String storageConnectionString = System.getenv("STORAGE_CONNECTIONSTRING");
+    // private static final String storageContainerName = System.getenv("BLOB_CONTAINER");
+    // private static final String hostNamePrefix = "eph";
+    // private static final String eventHubConnectionString = System.getenv("EVENTHUB_CONNECTIONSTRING");
     public static void main(String args[]) throws InterruptedException, ExecutionException
     {
-		EventProcessorHostFactory eventProcessorHostFactory = new EventProcessorHostFactory();
-        EventProcessorResult result = eventProcessorHostFactory.ProcessEvents();
+        EventProcessorHostConfiguration config = CreateEventProcessorHostConfiguration();
+		EventProcessorHostFactory ephFactory = new EventProcessorHostFactory(config);
+        EventProcessorResult result = ephFactory.ProcessEvents();
         
         if (!result.isValid())
         {
@@ -23,7 +30,18 @@ public class TestConsumerEPH
 
         System.out.println("Events processing completed");
     }
+
+    private static EventProcessorHostConfiguration CreateEventProcessorHostConfiguration() {
+        EventProcessorHostConfiguration config = new EventProcessorHostConfiguration();
+
+        config.setConsumerGroupName(System.getenv("CONSUMER_GROUP"));
+        config.setEventHubName(System.getenv("EVENTHUB_NAME"));
+        config.setStorageConnectionString(System.getenv("STORAGE_CONNECTIONSTRING"));
+        config.setStorageContainerName(System.getenv("BLOB_CONTAINER"));
+        config.setHostNamePrefix("eph");
+        config.setEventHubConnectionString(System.getenv("EVENTHUB_CONNECTIONSTRING"));
+
+        return config;
+    }
 }
-
-
 

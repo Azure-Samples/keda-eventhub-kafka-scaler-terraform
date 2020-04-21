@@ -9,22 +9,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import com.microsoft.azure.eventhubs.samples.testconsumereph.ErrorNotificationHandler;
 import com.microsoft.azure.eventhubs.samples.testconsumereph.EventProcessor;
+import com.microsoft.azure.eventhubs.samples.testconsumereph.EventProcessorHostConfiguration;
 import com.microsoft.azure.eventhubs.samples.testconsumereph.EventProcessorResult;
 import com.microsoft.azure.eventprocessorhost.EventProcessorHost;
 import com.microsoft.azure.eventprocessorhost.EventProcessorOptions;
 
 public class EventProcessorHostFactory {
-    private static final String consumerGroupName = System.getenv("CONSUMER_GROUP");
-    private static final String eventHubName = System.getenv("EVENTHUB_NAME");
-    private static final String storageConnectionString = System.getenv("STORAGE_CONNECTIONSTRING");
-    private static final String storageContainerName = System.getenv("BLOB_CONTAINER");
-    private static final String hostNamePrefix = "eph";
-    private static final String eventHubConnectionString = System.getenv("EVENTHUB_CONNECTIONSTRING");
-
     private final EventProcessorHost host;
 
-    public EventProcessorHostFactory() {
-        host = CreateEventProcessorHost();
+    public EventProcessorHostFactory(EventProcessorHostConfiguration config) {
+        host = CreateEventProcessorHost(config);
     }
 
     public EventProcessorResult ProcessEvents() {
@@ -34,11 +28,14 @@ public class EventProcessorHostFactory {
         return ExecuteEventProcessor(eventProcessorRegister);
     }
 
-    private EventProcessorHost CreateEventProcessorHost() {
+    private EventProcessorHost CreateEventProcessorHost(EventProcessorHostConfiguration config) {
+        String hostName = EventProcessorHost.createHostName(config.getHostNamePrefix());
+
         return EventProcessorHost.EventProcessorHostBuilder
-            .newBuilder(EventProcessorHost.createHostName(hostNamePrefix), consumerGroupName)
-            .useAzureStorageCheckpointLeaseManager(storageConnectionString, storageContainerName, null)
-            .useEventHubConnectionString(eventHubConnectionString.toString(), eventHubName).build();
+            .newBuilder(hostName, config.getConsumerGroupName())
+            .useAzureStorageCheckpointLeaseManager(config.getStorageConnectionString(), config.getStorageContainerName(), null)
+            .useEventHubConnectionString(config.getEventHubConnectionString(), config.getEventHubName())
+            .build();
     }
 
     private EventProcessorOptions CreateEventProcessorOptions() {
