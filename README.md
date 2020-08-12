@@ -1,3 +1,19 @@
+---
+page_type: sample
+languages:
+- java
+- yaml
+products:
+- azure
+- azure-functions
+- azure-container-registry
+- azure-kubernetes-service
+- azure-event-hubs
+- keda
+description: "This is a quickstart for Kafka trigger scaler using Azure Event Hubs with Kafka head to scale Java applications deployed on AKS which consume messages from Azure Event Hub."
+urlFragment: keda-eventhub-kafka-scaler-terraform
+---
+
 # Autoscaling Java applications with KEDA using Azure Event Hubs
 
 This is a quickstart for **Kafka trigger scaler** using **Azure Event Hubs with Kafka head** to scale **Java applications** deployed on **AKS** which consume messages from Azure Event Hub.
