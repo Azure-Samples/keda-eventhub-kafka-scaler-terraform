@@ -192,10 +192,11 @@ consumer_group: "<eventhub_consumergroup_name_base64encoded>"
 eventhub_name: "<eventhub_name_base64encoded>"
 ```
 
-The other secrets in the `deploy-secret.yaml` are already filled in for you. The `authmode` is set to be base64 encoded string for `sasl_ssl_plain` and the `username` is set to be base64 encoded string for `$ConnectionString`.
+The other secrets in the `deploy-secret.yaml` are already filled in for you. The `sasl` is set to be base64 encoded string for `plaintext`, `tls` is set to be base64 encoded string for `enabled` and the `username` is set to be base64 encoded string for `$ConnectionString`.
 
 ```yaml
-authMode: "c2FzbF9zc2xfcGxhaW4="
+sasl: "cGxhaW50ZXh0="
+tls: "ZW5hYmxl"
 username: "JENvbm5lY3Rpb25TdHJpbmc="
 ```
 

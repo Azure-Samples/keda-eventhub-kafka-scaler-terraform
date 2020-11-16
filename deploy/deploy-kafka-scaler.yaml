@@ -38,24 +38,27 @@ spec:
                 name: keda-kafka-secrets
                 key: eventhub_name
 ---
-apiVersion: keda.k8s.io/v1alpha1
+apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
   name: keda-trigger-auth-kafka-credential
   namespace: default
 spec:
   secretTargetRef:
-  - parameter: authMode
+  - parameter: sasl
     name: keda-kafka-secrets
-    key: authMode
+    key: sasl
   - parameter: username
     name: keda-kafka-secrets
     key: username
   - parameter: password
     name: keda-kafka-secrets
     key: password
+  - parameter: tls
+    name: keda-kafka-secrets
+    key: tls
 ---
-apiVersion: keda.k8s.io/v1alpha1
+apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: kafka-scaledobject
@@ -65,7 +68,7 @@ metadata:
     deploymentName: kedaconsumer
 spec:
   scaleTargetRef:
-    deploymentName: kedaconsumer
+    name: kedaconsumer
   pollingInterval: 30
   triggers:
   - type: kafka
